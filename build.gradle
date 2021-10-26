@@ -12,10 +12,15 @@ repositories {
 	mavenCentral()
 }
 
+bootRun {
+	standardInput = System.in
+}
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	runtimeOnly 'com.h2database:h2'
+	implementation group: 'org.springframework.shell', name: 'spring-shell-starter', version: '2.0.0.RELEASE'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 

@@ -15,17 +15,9 @@ import java.util.Optional;
 public class AccountService {
     @Autowired
     private AccountRepository accountRepository;
-    @Lazy
-    @Autowired
-    private UserService userService;
 
-    public Account createAccountForUser(long userId) {
-        var optionalUser = userService.getUserById(userId);
-        if (optionalUser.isEmpty()) {
-            throw new IllegalArgumentException("No user exists with id " + userId);
-        }
+    public Account createAccount() {
         var account = new Account();
-        account.setUser(optionalUser.get());
         return accountRepository.save(account);
     }
 

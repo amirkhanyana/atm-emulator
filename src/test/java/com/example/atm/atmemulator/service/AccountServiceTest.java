@@ -7,12 +7,12 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.shell.jline.InteractiveShellApplicationRunner;
+import org.springframework.shell.jline.ScriptShellApplicationRunner;
 
 import javax.validation.ConstraintViolationException;
 import java.util.Optional;
@@ -20,7 +20,12 @@ import java.util.Optional;
 import static org.mockito.ArgumentMatchers.any;
 
 
-@SpringBootTest
+@SpringBootTest(
+        properties = {
+                InteractiveShellApplicationRunner.SPRING_SHELL_INTERACTIVE_ENABLED + "=false",
+                ScriptShellApplicationRunner.SPRING_SHELL_SCRIPT_ENABLED + "=false"
+        }
+)
 public class AccountServiceTest {
 
     @MockBean
@@ -34,33 +39,13 @@ public class AccountServiceTest {
 
     @Test
     public void whenCreateAccountThenReturnCreated() {
-        long userId = 0;
-        User expectedUser = new User();
-        expectedUser.setId(userId);
         Account expected = new Account();
-        expected.setUser(expectedUser);
-        Mockito.when(userService.getUserById(userId)).thenReturn(Optional.of(expectedUser));
+        expected.setId(1);
         Mockito.when(accountRepository.save(any())).thenReturn(expected);
-        Account account = accountService.createAccountForUser(userId);
+        Account account = accountService.createAccount();
         Assertions.assertNotNull(account);
-        User user = account.getUser();
-        Assertions.assertNotNull(user);
-        Assertions.assertEquals(userId, user.getId());
+        Assertions.assertEquals(expected.getId(), account.getId());
     }
-
-    @Test
-    public void whenCreateAccountForNonExistingUserThenThrowException() {
-        long userId = 0;
-        User expectedUser = new User();
-        expectedUser.setId(userId);
-        Account expected = new Account();
-        expected.setUser(expectedUser);
-        Mockito.when(userService.getUserById(userId)).thenReturn(Optional.empty());
-        Assertions.assertThrows(IllegalArgumentException.class,
-                () -> accountService.createAccountForUser(userId));
-    }
-
-
 
     @Test
     public void whenGetExistingAccountByIdThenReturn() {
